@@ -1,0 +1,50 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+#app {
+  position: relative;
+  top: 15vh;
+  left: 10vw;
+  min-height: 70vh;
+  width: 80vw;
+  background: forestgreen;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border-radius: 16px;
+}
+
+.controls {
+  width: 100%;
+  background-color: rgb(26, 123, 26);
+  text-align: center;
+  padding: 8px;
+}
+
+button {
+  border: 1px solid lightgreen;
+  background-color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12pt;
+  cursor: pointer
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.card-container {
+  text-align: center;
+}
+
+.card-container img {
+  scale: .8;
+}
+
+.card-container:first-child {
+  background-color: rgb(26, 123, 26);
+}

@@ -6,8 +6,8 @@
 }
 
 #app {
-  position: relative;
-  top: 15vh;
+  position: absolute;
+  top: 10vh;
   left: 10vw;
   min-height: 70vh;
   width: 80vw;
@@ -22,15 +22,21 @@
   background-color: rgb(26, 123, 26);
   text-align: center;
   padding: 8px;
+  position: sticky;
+  top: 0;
 }
 
 button {
-  border: 1px solid lightgreen;
+  border: none;
   background-color: white;
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 12pt;
   cursor: pointer
+}
+
+button:hover {
+  box-shadow: 2px 0 10px rgba(23,23,23,.4);
 }
 
 button:disabled {
@@ -42,9 +48,14 @@ button:disabled {
 }
 
 .card-container img {
-  scale: .8;
+  scale: .75;
 }
 
 .card-container:first-child {
   background-color: rgb(26, 123, 26);
+  opacity: 1;
+}
+
+.card-container:not(:nth-child(n+1)) {
+  opacity: .75;
 }

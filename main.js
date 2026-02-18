@@ -14,7 +14,7 @@ import Poker from './Poker.js'
 // [*] create base poker object
 const poker = new Poker()
 
-//  INTERACTION INNVOCATION 
+//  INTERACTION INNVOCATION
 
 // ...
 // [1] set draw button as disabled until we have deck
@@ -44,24 +44,22 @@ poker.controls.newDeck.addEventListener('click', async (event) => {
 // [3] handle card draw from card draw button
 poker.controls.drawCard.addEventListener('click', async (event) => {
   try {
-
     // [3.1] draw cards and update new button.
     let cards = await poker.draw() // defaults to five
-    
+
     // [3.2] update the new card button with remaing.
     poker.controls.newDeck.innerText = `[${cards.deck_id}] ${cards.remaining} Cards Remaining`
-    
+
     // [todo... maybe?]
-    if (!poker.auto.evaluation) {}
+    if (!poker.auto.evaluation) {
+    }
 
     // [3.3] whatcha got there buddy.
     let hands = await poker.evaluate(cards.cards)
-    
-    console.log(hands)
 
-    // [3.4] 
+    // [3.4] read inside out, wait for hand then wait for print
     await poker.print(cards.cards, hands, '#app')
-    
+  
   } catch (error) {
     // [3.*] ya'know... errors.
     console.error(`drawCard:click()`, event, error)

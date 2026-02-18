@@ -1,5 +1,7 @@
 export default class Poker {
-  // [0] setup
+  /**
+   * [0] setup
+   */
   constructor() {
     this.auto = { shuffle: true, evaluation: true }
     this.drawn = 0
@@ -12,18 +14,35 @@ export default class Poker {
     this.controls = {
       newDeck: document.body.querySelector('button.controls-fresh'),
       drawCard: document.body.querySelector('button.controls-draw'),
-      queryButton: document.body.querySelector('button.controls-query')
+      queryButton: document.body.querySelector('button.controls-query'),
+    }
+    // the lower in the array the better it is.
+    this.ranking = ["royalflush","straightflush","fourofakind","fullhouse","flush","straight","threeofakind","twopair","pair","highcard"];
+
+    this.test = {
+      royalflush: `https://prog2700.onrender.com/pokerhandtest/royalflush`,
+      straightflush: `https://prog2700.onrender.com/pokerhandtest/straightflush`,
+      four: `https://prog2700.onrender.com/pokerhandtest/fourofakind`,
+      fullhouse: `https://prog2700.onrender.com/pokerhandtest/fullhouse`,
+      flush: `https://prog2700.onrender.com/pokerhandtest/flush`, 
+      straight: `https://prog2700.onrender.com/pokerhandtest/straight`, 
+      three: `https://prog2700.onrender.com/pokerhandtest/threeofakind`,
+      twopair: `https://prog2700.onrender.com/pokerhandtest/twopair`,
+      pair: `https://prog2700.onrender.com/pokerhandtest/onepair`,
+      highcard: `https://prog2700.onrender.com/pokerhandtest/highcard`,
+      random: `https://prog2700.onrender.com/pokerhandtest/random`
     }
   }
 
   /**
    * [1] return the new deck id from api
-   * @returns {Object} new deck context
+   * @returns {*} new deck context
    */
   async fresh() {
     try {
       // [1.1] obtain new deck info from endpoint
-      const response = await fetch(`${this.baseAPI}/new/shuffle?count=1?jokers_enabled=false`, {
+      let address = `${this.baseAPI}/new/shuffle?count=1?jokers_enabled=false`
+      const response = await fetch(address, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
@@ -57,8 +76,8 @@ export default class Poker {
 
   /**
    * [2] return a new hand of random cards from api
-   * @param Number amount of cards you wish to draw, int [0 - 52]
-   * @returns
+   * @param {*} amount of cards you wish to draw, int [0 - 52]
+   * @returns {*} current deck draw context
    */
   async draw(amount) {
     try {
@@ -77,6 +96,8 @@ export default class Poker {
       !amount ? (amount = 5) : amount
 
       // [2.4] obtain hopfully object with "amount" of cards
+      // `${this.baseAPI}/${this.deck.deck_id}/draw?count=${amount}`
+
       const response = await fetch(`${this.baseAPI}/${this.deck.deck_id}/draw?count=${amount}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -101,22 +122,20 @@ export default class Poker {
         console.log('removing previous')
       }
       this.last = body
-
-      // ...
-      console.log(`Poker.draw(${amount})`, body)
-
+      
       return body
     } catch (error) {
       return error
     }
   }
+  /** */
 
   /**
    *
+   * [3] check for possible hands
    * @param {*} cards array
-   * @returns
+   * @returns {*} boolean notation of possible hands { hand_name: 1 | 0 }
    */
-  // [3] check for best hand
   async evaluate(cards) {
     try {
       // [3.1] establish local hand and count objects
@@ -139,42 +158,63 @@ export default class Poker {
         suitCount[card.suit] = (suitCount[card.suit] || 0) + 1
       }
 
-      // [3.3] counts is a sorted array, allowing easy pair notation
+      // [3.4] counts is a sorted array, allowing easy pair notation
       const counts = Object.values(rankCount).sort((a, b) => b - a) // sorted descending
-      
-      // [3.4] ranks, convert to Number before sorting.
-      const uniqueRanks = Object.keys(rankCount).map(Number).sort((a, b) => a - b)
+
+      // [3.5] ranks, convert o Number before sorting.
+      const uniqueRanks = Object.keys(rankCount)
+        .map(Number)
+        .sort((a, b) => a - b)
       const flush = Object.keys(suitCount).length === 1 ? 1 : 0
 
-      // [3.5] steve bool - for ya' truths
-      const checks = {
+      // [3.6] steve bool - for ya' truths
+      const possibles = {
         flush,
         straight: uniqueRanks.length === 5 ? (uniqueRanks[4] - uniqueRanks[0] === 4 ? 1 : 0) : 0,
-        royalflush: flush && JSON.stringify(uniqueRanks) === JSON.stringify([10, 11, 12, 13, 14]),
+        royalflush: flush && JSON.stringify(uniqueRanks) === JSON.stringify([10, 11, 12, 13, 14]) ? 1 : 0,
         three: counts[0] === 3 && counts[1] < 2 ? 1 : 0,
         four: counts[0] === 4 ? 1 : 0,
         fullhouse: counts[0] === 3 && counts[1] === 2 ? 1 : 0,
         twopair: counts[0] === 2 && counts[1] === 2 ? 1 : 0,
-        pair: counts[0] === 2 ? 1 : 0,
+        pair: counts[0] === 2 ? 1 : 0
       }
 
-      for (let [handName, handValue] of Object.entries(checks)) {
-
-        if (handValue === 1) {
+      // [3.7] id and sort based on ranking position in array
+      const pool = []
+      for (let [handName, bool] of Object.entries(possibles)) {
+        if (bool === 1) {
           console.log(handName)
+          for (let [rank, rankName] of Object.entries(this.ranking)) {
+            if (handName == rankName) {
+              pool.push(rank)
+            }
+          }
         }
-
+        if (pool.length === 0) {
+          pool.push(this.ranking.length - 1)
+        }
       }
+      pool.sort((a,b) => a - b)
 
-      // [3.6] done
-      return checks
+      console.log('pool is', pool)
+
+      // [3.*] done
+      return this.ranking[pool[0]]
     } catch (error) {
-      console.log(error)
+      console.error('poker.evaluate()', error)
     }
   }
 
-  // [4] print to screen
-  async print(cards, hands, selector) {
+  /**
+   * [4] print to screen
+   * @param {*} cards api card context
+   * @param {*} hands winning hands
+   * @param {*} selector dom entry
+   */
+  async print(cards, hand, selector) {
+
+    console.log(`your winning hand is ${hand}`)
+
     try {
       // [4.1]
       parent = document.querySelector(selector)
@@ -186,23 +226,12 @@ export default class Poker {
         cardContainer.innerHTML += `<img src="${card.image}" alt="${card.value} of ${card.suit}">`
       }
 
-      for (let [name, result] of Object.entries(hands)) {
-        
-        if (result === 1) {
-          console.log(name)
-        }
-
-      }
-
+      cardContainer.innerHTML += `<div class="winning-hand">${hand}</div>`
+      
+      // [4.3] place into DOM
       parent.insertBefore(cardContainer, parent.children[1])
     } catch (error) {
       console.error(error)
-    }
-  }
-
-  async hand(hands) {
-    for (let [key, value] of Object.entries(hands)) {
-      console.log(key, value)
     }
   }
 }

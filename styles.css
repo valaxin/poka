@@ -45,10 +45,21 @@ button:disabled {
 
 .card-container {
   text-align: center;
+  padding: 12px;
+  padding-top: 16px;
+  background-color: rgba(23,23,23,.4);
+  border-bottom: 2px solid black;
 }
 
 .card-container img {
-  width: 25vh;
+  max-width: 114px;
+  margin: 5px 10px;
+  z-index: 998;
+  transition: all ease-in-out 200ms;
+}
+
+.card-container img:hover {
+  transform: scale(1.1);
 }
 
 .card-container:first-child {
@@ -56,6 +67,16 @@ button:disabled {
   opacity: 1;
 }
 
-.card-container:not(:nth-child(n+1)) {
+.card-container:not(:nth-child(n1)) {
   opacity: .75;
+}
+
+.card-container > .winning-hand {
+  font-size: 6vh;
+  font-weight: 900;
+  border-radius: 16px;
+  color: white;
+  text-shadow: 1px 1px solid black;
+  padding: 8px 12px;
+  z-index: 999;
 }

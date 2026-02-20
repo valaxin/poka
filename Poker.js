@@ -1,6 +1,7 @@
 export default class Poker {
   /**
    * [0] setup
+   * - this could be cleaned up...
    */
   constructor() {
     this.auto = { shuffle: true, evaluation: true }
@@ -17,20 +18,43 @@ export default class Poker {
       queryButton: document.body.querySelector('button.controls-query'),
     }
     // the lower in the array the better it is.
-    this.ranking = ["royalflush","straightflush","fourofakind","fullhouse","flush","straight","threeofakind","twopair","pair","highcard"];
-
+    // hard coded nice name synced indexes
+    this.ranking = [
+      'royalflush',
+      'straightflush',
+      'fourofakind',
+      'fullhouse',
+      'flush',
+      'straight',
+      'threeofakind',
+      'twopair',
+      'pair',
+      'highcard',
+    ]
+    this.handNames = [
+      'Royal Flush',
+      'Straight Flush',
+      'Four of a Kind',
+      'Full House',
+      'Flush',
+      'Straight',
+      'Three of a Kind',
+      'Two Pair',
+      'One Pair',
+      'High Card',
+    ]
     this.test = {
       royalflush: `https://prog2700.onrender.com/pokerhandtest/royalflush`,
       straightflush: `https://prog2700.onrender.com/pokerhandtest/straightflush`,
       four: `https://prog2700.onrender.com/pokerhandtest/fourofakind`,
       fullhouse: `https://prog2700.onrender.com/pokerhandtest/fullhouse`,
-      flush: `https://prog2700.onrender.com/pokerhandtest/flush`, 
-      straight: `https://prog2700.onrender.com/pokerhandtest/straight`, 
+      flush: `https://prog2700.onrender.com/pokerhandtest/flush`,
+      straight: `https://prog2700.onrender.com/pokerhandtest/straight`,
       three: `https://prog2700.onrender.com/pokerhandtest/threeofakind`,
       twopair: `https://prog2700.onrender.com/pokerhandtest/twopair`,
       pair: `https://prog2700.onrender.com/pokerhandtest/onepair`,
       highcard: `https://prog2700.onrender.com/pokerhandtest/highcard`,
-      random: `https://prog2700.onrender.com/pokerhandtest/random`
+      random: `https://prog2700.onrender.com/pokerhandtest/random`,
     }
   }
 
@@ -72,7 +96,6 @@ export default class Poker {
       return error
     }
   }
-  /**/
 
   /**
    * [2] return a new hand of random cards from api
@@ -95,7 +118,7 @@ export default class Poker {
       // [2.3] no amount? no problem!
       !amount ? (amount = 5) : amount
 
-      // [2.4] obtain hopfully object with "amount" of cards
+      // [2.4] obtain hopfully object with 'amount' of cards
       // `${this.baseAPI}/${this.deck.deck_id}/draw?count=${amount}`
 
       const response = await fetch(`${this.baseAPI}/${this.deck.deck_id}/draw?count=${amount}`, {
@@ -122,13 +145,12 @@ export default class Poker {
         console.log('removing previous')
       }
       this.last = body
-      
+
       return body
     } catch (error) {
       return error
     }
   }
-  /** */
 
   /**
    *
@@ -176,7 +198,7 @@ export default class Poker {
         four: counts[0] === 4 ? 1 : 0,
         fullhouse: counts[0] === 3 && counts[1] === 2 ? 1 : 0,
         twopair: counts[0] === 2 && counts[1] === 2 ? 1 : 0,
-        pair: counts[0] === 2 ? 1 : 0
+        pair: counts[0] === 2 ? 1 : 0,
       }
 
       // [3.7] id and sort based on ranking position in array
@@ -194,12 +216,13 @@ export default class Poker {
           pool.push(this.ranking.length - 1)
         }
       }
-      pool.sort((a,b) => a - b)
-
-      console.log('pool is', pool)
+      pool.sort((a, b) => a - b)
 
       // [3.*] done
-      return this.ranking[pool[0]]
+      return {
+        key: this.ranking[pool[0]],
+        name: this.handNames[pool[0]],
+      }
     } catch (error) {
       console.error('poker.evaluate()', error)
     }
@@ -212,7 +235,6 @@ export default class Poker {
    * @param {*} selector dom entry
    */
   async print(cards, hand, selector) {
-
     console.log(`your winning hand is ${hand}`)
 
     try {
@@ -223,11 +245,11 @@ export default class Poker {
 
       // [4.2] loop over each creating element along the way.
       for (let [idx, card] of Object.entries(cards)) {
-        cardContainer.innerHTML += `<img src="${card.image}" alt="${card.value} of ${card.suit}">`
+        cardContainer.innerHTML += `<img src='${card.image}' alt='${card.value} of ${card.suit}'>`
       }
 
-      cardContainer.innerHTML += `<div class="winning-hand">${hand}</div>`
-      
+      cardContainer.innerHTML += `<div class='winning-hand'>${hand.name}</div>`
+
       // [4.3] place into DOM
       parent.insertBefore(cardContainer, parent.children[1])
     } catch (error) {
